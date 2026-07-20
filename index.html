@@ -3,114 +3,129 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>客服 AI 回覆站｜Jvision AI Interactive Demo</title>
+  <title>客服 AI 回覆站｜Jvision AI 產業管理系統 Demo</title>
   <meta name="description" content="整合共享收件箱、知識庫、AI 回覆與 SLA。" />
-  <link rel="stylesheet" href="./styles.css?v=layout-floating-orbs-20260720-stats-contrast-1093" />
+  <link rel="stylesheet" href="./styles.css?v=industry-system-framework-sample-20260720-1093" />
 </head>
-<body class="layout-floating-orbs" data-layout="floating-orbs">
-  <main class="shell">
-    <nav class="nav" aria-label="Demo 資訊">
-      <strong>JVision AI Case 093</strong>
-      <span>協作、企業營運與 AI 工作區</span>
-    </nav>
-
-    <section class="hero">
-      <div class="copy">
-        <p class="eyebrow">Interactive AI Empowerment Demo</p>
-        <h1>客服 AI 回覆站</h1>
-        <p>整合共享收件箱、知識庫、AI 回覆與 SLA。</p>
-        <div class="actions">
-          <a href="#workspace">開始操作 Demo</a>
-          <button class="ghost-button" type="button" data-action="run-ai">產生 AI 建議</button>
-        </div>
+<body class="theme-ops-blueprint-1093">
+  <main class="system-shell">
+    <aside class="side-panel" aria-label="系統側邊欄">
+      <div class="brand-block">
+        <span>JVision</span>
+        <strong>Business OS</strong>
       </div>
-      <aside class="dashboard-card" aria-label="AI 即時工作台">
-        <div class="card-head">
-          <span>今日 AI 工作台</span>
-          <b>LIVE</b>
-        </div>
-        <div class="metric-grid">
-          <article><small>待處理</small><strong id="openCount">--</strong></article>
-          <article><small>高風險</small><strong id="riskCount">--</strong></article>
-          <article><small>完成率</small><strong id="doneRate">--</strong></article>
-          <article><small>總案件</small><strong id="totalCount">--</strong></article>
-          <article><small>平均 AI 分數</small><strong id="avgScore">--</strong></article>
-          <article><small>急件</small><strong id="urgentCount">--</strong></article>
-        </div>
-        <div class="insight">
-          <span>AI 建議</span>
-          <p id="aiInsight">正在整理資料...</p>
-        </div>
-      </aside>
-    </section>
+      <nav class="module-nav" aria-label="功能模組">
+        <button type="button" class="active" data-module="營運總覽"><span>01</span>營運總覽</button><button type="button" class="" data-module="案件清單"><span>02</span>案件清單</button><button type="button" class="" data-module="資料主檔"><span>03</span>資料主檔</button><button type="button" class="" data-module="AI 決策摘要"><span>04</span>AI 決策摘要</button>
+      </nav>
+      <section class="ops-summary">
+        <p>今日營運摘要</p>
+        <strong id="sidebarOpen">--</strong>
+        <span>待處理 營運任務</span>
+        <button type="button" data-action="run-ai">產生 AI 建議</button>
+      </section>
+    </aside>
 
-    <section class="modules" id="modules" aria-label="功能架構">
-      <article><span>01</span><h2>AI 摘要</h2><p>自動整理今日異常、待辦、風險與下一步建議。</p></article><article><span>02</span><h2>風險排序</h2><p>依期限、影響度與資料完整度排序最該先處理的項目。</p></article><article><span>03</span><h2>任務派發</h2><p>把 AI 建議轉成負責人、期限與可追蹤狀態。</p></article><article><span>04</span><h2>營運洞察</h2><p>將每日操作累積成趨勢、瓶頸與改善清單。</p></article>
-    </section>
-
-    <section class="panel analytics-panel" aria-label="AI 營運統計">
-      <div class="panel-title">
-        <span>AI 營運統計</span>
-        <b>Data Pulse</b>
-      </div>
-      <div class="analytics-grid">
-        <article class="analytics-card">
-          <span>風險分布</span>
-          <div class="risk-bars" id="riskBars"></div>
-        </article>
-        <article class="analytics-card">
-          <span>AI 成效估算</span>
-          <div class="impact-grid">
-            <article><small>預估節省工時</small><strong id="savedHours">--</strong></article>
-            <article><small>自動化覆蓋率</small><strong id="automationRate">--</strong></article>
-            <article><small>改善任務</small><strong id="improvementCount">--</strong></article>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section class="workspace" id="workspace">
-      <section class="panel wide">
-        <div class="panel-title">
-          <span>流程看板</span>
-          <b>AI Sorted</b>
+    <section class="workspace">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">AI Empowered Industry System · Case 093</p>
+          <h1>客服 AI 回覆站</h1>
+          <span>協作、企業營運與 AI 工作區｜整合共享收件箱、知識庫、AI 回覆與 SLA。</span>
         </div>
-        <div class="board" id="stageBoard"></div>
+        <label class="global-search">
+          <span>搜尋</span>
+          <input id="searchInput" placeholder="搜尋案件、客戶、任務或負責人" />
+        </label>
+      </header>
+
+      <section class="kpi-grid" aria-label="即時統計">
+        <article><span>待處理</span><strong id="openCount">--</strong><small>需要團隊處理</small></article>
+        <article><span>高風險</span><strong id="riskCount">--</strong><small>AI 建議優先看</small></article>
+        <article><span>完成率</span><strong id="doneRate">--</strong><small>今日流程進度</small></article>
+        <article><span>預估效益</span><strong id="impactValue">--</strong><small>依風險與工時估算</small></article>
       </section>
 
-      <aside class="panel">
-        <div class="panel-title">
-          <span>新增營運任務</span>
-          <b>Local Save</b>
-        </div>
-        <form class="task-form" id="taskForm">
-          <label>項目名稱<input name="title" required placeholder="輸入要追蹤的工作項目" /></label>
-          <label>部門<input name="target" required placeholder="例如：北區門市 / A 產線 / 客戶 A" /></label>
-          <label>風險類型
-            <select name="risk">
-              <option value="SLA 逾期">SLA 逾期</option><option value="知識缺口">知識缺口</option><option value="人力負載">人力負載</option><option value="流程卡關">流程卡關</option>
-            </select>
-          </label>
-          <button type="submit">新增到工作台</button>
-        </form>
-        <div class="toolbox">
-          <button type="button" data-action="run-ai">重新分析</button>
-          <button type="button" data-action="reset">還原範例資料</button>
-        </div>
-      </aside>
-    </section>
+      <section class="control-grid">
+        <article class="panel main-flow">
+          <div class="panel-heading">
+            <div>
+              <span>工作流程</span>
+              <h2>營運任務狀態看板</h2>
+            </div>
+            <b id="queueLabel">--</b>
+          </div>
+          <div class="stage-board" id="stageBoard"></div>
+        </article>
 
-    <section class="panel detail-panel">
-      <div class="panel-title">
-        <span>AI 處理佇列</span>
-        <b id="queueLabel">0 items</b>
-      </div>
-      <div class="task-list" id="taskList"></div>
+        <article class="panel ai-panel">
+          <div class="panel-heading">
+            <div>
+              <span>AI 賦能情境</span>
+              <h2>痛點與系統建議</h2>
+            </div>
+            <b>LIVE</b>
+          </div>
+          <div class="ai-story">
+            <p class="pain">傳統痛點：資料分散、人工追蹤、異常通常太晚才被發現。</p>
+            <p id="aiInsight">正在整理 AI 建議...</p>
+          </div>
+          <div class="risk-bars" id="riskBars"></div>
+        </article>
+      </section>
+
+      <section class="control-grid lower">
+        <article class="panel form-panel">
+          <div class="panel-heading">
+            <div>
+              <span>新增資料</span>
+              <h2>新增追蹤項目</h2>
+            </div>
+          </div>
+          <form class="task-form" id="taskForm">
+            <label>項目名稱<input name="title" required placeholder="輸入要追蹤的工作項目" /></label>
+            <label>部門<input name="target" required placeholder="例如：部門 A / 客戶 A / 據點 A" /></label>
+            <label>風險類型
+              <select name="risk">
+                <option value="SLA 逾期">SLA 逾期</option><option value="知識缺口">知識缺口</option><option value="人力負載">人力負載</option><option value="流程卡關">流程卡關</option>
+              </select>
+            </label>
+            <button type="submit">新增到系統</button>
+          </form>
+          <div class="quick-actions">
+            <button type="button" data-action="run-ai">AI 重新分析</button>
+            <button type="button" data-action="simulate">模擬主管審核</button>
+            <button type="button" data-action="reset">還原範例資料</button>
+          </div>
+        </article>
+
+        <article class="panel records-panel">
+          <div class="panel-heading">
+            <div>
+              <span>資料清單</span>
+              <h2>即時案件與操作</h2>
+            </div>
+            <b id="recordCount">--</b>
+          </div>
+          <div class="record-list" id="taskList"></div>
+        </article>
+      </section>
+
+      <section class="panel log-panel">
+        <div class="panel-heading">
+          <div>
+            <span>營運紀錄</span>
+            <h2>系統操作 Log</h2>
+          </div>
+          <b>Audit Trail</b>
+        </div>
+        <div class="log-list" id="logList"></div>
+      </section>
     </section>
   </main>
   <script>
     window.DEMO_CONFIG = {"id":1093,"caseNo":"093","name":"客服 AI 回覆站","category":"協作、企業營運與 AI 工作區","description":"整合共享收件箱、知識庫、AI 回覆與 SLA。","repoName":"jvision-ai-case-093-ai-helpdesk","profile":{"object":"營運任務","owner":"營運主管","stages":["新任務","處理中","待簽核","已完成"],"risks":["SLA 逾期","知識缺口","人力負載","流程卡關"],"fields":["部門","期限","風險","負責人"]},"records":[{"id":"1093-1","title":"營運任務 1","target":"客服 AI 回覆站 · 部門 1","owner":"Leo","due":"D+5","risk":"SLA 逾期","stage":"新任務","score":77,"priority":"medium","done":false},{"id":"1093-2","title":"營運任務 2","target":"客服 AI 回覆站 · 部門 2","owner":"Yuna","due":"D+4","risk":"知識缺口","stage":"處理中","score":67,"priority":"medium","done":false},{"id":"1093-3","title":"營運任務 3","target":"客服 AI 回覆站 · 部門 3","owner":"Kevin","due":"D+1","risk":"人力負載","stage":"待簽核","score":83,"priority":"high","done":false},{"id":"1093-4","title":"營運任務 4","target":"客服 AI 回覆站 · 部門 4","owner":"營運主管","due":"D+10","risk":"流程卡關","stage":"已完成","score":41,"priority":"low","done":true},{"id":"1093-5","title":"營運任務 5","target":"客服 AI 回覆站 · 部門 5","owner":"Aken","due":"D+9","risk":"SLA 逾期","stage":"新任務","score":53,"priority":"low","done":false},{"id":"1093-6","title":"營運任務 6","target":"客服 AI 回覆站 · 部門 6","owner":"Mia","due":"D+4","risk":"知識缺口","stage":"處理中","score":65,"priority":"medium","done":false},{"id":"1093-7","title":"營運任務 7","target":"客服 AI 回覆站 · 部門 7","owner":"Leo","due":"D+4","risk":"人力負載","stage":"待簽核","score":55,"priority":"low","done":false},{"id":"1093-8","title":"營運任務 8","target":"客服 AI 回覆站 · 部門 8","owner":"Yuna","due":"D+2","risk":"流程卡關","stage":"已完成","score":63,"priority":"medium","done":true}],"modules":[{"title":"AI 摘要","text":"自動整理今日異常、待辦、風險與下一步建議。"},{"title":"風險排序","text":"依期限、影響度與資料完整度排序最該先處理的項目。"},{"title":"任務派發","text":"把 AI 建議轉成負責人、期限與可追蹤狀態。"},{"title":"營運洞察","text":"將每日操作累積成趨勢、瓶頸與改善清單。"}]};
+    window.SYSTEM_PRESET = {"modules":["營運總覽","案件清單","資料主檔","AI 決策摘要"],"primaryAction":"產生 AI 建議","formTitle":"新增追蹤項目","searchPlaceholder":"搜尋案件、客戶、任務或負責人","financeLabel":"預估效益","unit":"部門","accentWord":"Business OS"};
   </script>
-  <script src="./app.js?v=stats-20260720"></script>
+  <script src="./app.js?v=industry-system-framework-sample-20260720"></script>
 </body>
 </html>

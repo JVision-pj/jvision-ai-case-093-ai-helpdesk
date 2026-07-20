@@ -1,14 +1,20 @@
-(function interactiveAppSource() {
+(function industrySystemDemo() {
 const config = window.DEMO_CONFIG;
-const storageKey = "jvision-demo-" + config.id;
+const preset = window.SYSTEM_PRESET;
+const storageKey = "jvision-industry-system-" + config.id;
 const $ = (selector) => document.querySelector(selector);
+let logs = ["系統已載入範例資料，AI 已完成今日營運摘要。"];
+
+function cloneRecords() {
+  return JSON.parse(JSON.stringify(config.records));
+}
 
 function loadRecords() {
   try {
     const saved = JSON.parse(localStorage.getItem(storageKey));
-    return Array.isArray(saved) ? saved : structuredClone(config.records);
+    return Array.isArray(saved) ? saved : cloneRecords();
   } catch {
-    return structuredClone(config.records);
+    return cloneRecords();
   }
 }
 
@@ -26,91 +32,96 @@ function dueDays(value) {
 function getStats() {
   const total = records.length;
   const open = records.filter((record) => !record.done).length;
+  const done = total - open;
   const highRisk = records.filter((record) => !record.done && record.priority === "high").length;
   const mediumRisk = records.filter((record) => !record.done && record.priority === "medium").length;
   const lowRisk = records.filter((record) => !record.done && record.priority === "low").length;
   const urgent = records.filter((record) => !record.done && dueDays(record.due) <= 3).length;
-  const done = records.filter((record) => record.done).length;
   const doneRate = total ? Math.round((done / total) * 100) : 0;
   const avgScore = total ? Math.round(records.reduce((sum, record) => sum + Number(record.score || 0), 0) / total) : 0;
-  const automationRate = total ? Math.min(98, Math.round(54 + doneRate * 0.22 + avgScore * 0.22)) : 0;
-  const savedHours = Math.max(1, Math.round((open * 0.9 + done * 0.45 + highRisk * 0.8) * 10) / 10);
-  const improvementCount = highRisk + mediumRisk + urgent;
-  return { total, open, highRisk, mediumRisk, lowRisk, urgent, done, doneRate, avgScore, automationRate, savedHours, improvementCount };
+  const impactValue = Math.max(18, Math.round((open * 1.8 + highRisk * 3.2 + urgent * 2.4 + avgScore / 8)));
+  return { total, open, done, highRisk, mediumRisk, lowRisk, urgent, doneRate, avgScore, impactValue };
 }
 
 function generateInsight() {
   const openRecords = records.filter((record) => !record.done).sort((a, b) => b.score - a.score);
-  if (!openRecords.length) return "所有項目都已完成。建議匯出今日摘要，沉澱成 SOP 與下次改善清單。";
+  if (!openRecords.length) return "目前所有項目已完成，建議匯出今日摘要，形成下次會議的改善清單。";
   const top = openRecords[0];
-  const grouped = openRecords.reduce((acc, record) => {
+  const riskMap = openRecords.reduce((acc, record) => {
     acc[record.risk] = (acc[record.risk] || 0) + 1;
     return acc;
   }, {});
-  const mainRisk = Object.entries(grouped).sort((a, b) => b[1] - a[1])[0];
+  const mainRisk = Object.entries(riskMap).sort((a, b) => b[1] - a[1])[0];
   const urgent = openRecords.filter((record) => dueDays(record.due) <= 3).length;
-  return `優先處理「${top.title}」：${top.risk} 分數 ${top.score}。目前最多風險集中在「${mainRisk[0]}」(${mainRisk[1]} 筆)，另有 ${urgent} 筆急件，建議由 ${top.owner} 先確認資料與下一步責任。`;
+  return `AI 建議先處理「${top.title}」，目前 ${mainRisk[0]} 累積 ${mainRisk[1]} 筆，另有 ${urgent} 筆急件。可由 ${top.owner} 先確認資料，再把下一步派給現場負責人。`;
 }
 
-function renderStats() {
+function priorityText(value) {
+  if (value === "high") return "高風險";
+  if (value === "medium") return "中風險";
+  return "低風險";
+}
+
+function filteredRecords() {
+  const keyword = ($("#searchInput")?.value || "").trim().toLowerCase();
+  if (!keyword) return records;
+  return records.filter((record) => [record.title, record.target, record.owner, record.risk, record.stage].join(" ").toLowerCase().includes(keyword));
+}
+
+function renderKpis() {
   const stats = getStats();
   $("#openCount").textContent = stats.open;
+  $("#sidebarOpen").textContent = stats.open;
   $("#riskCount").textContent = stats.highRisk;
   $("#doneRate").textContent = `${stats.doneRate}%`;
-  $("#totalCount").textContent = stats.total;
-  $("#avgScore").textContent = stats.avgScore;
-  $("#urgentCount").textContent = stats.urgent;
-  $("#queueLabel").textContent = `${records.length} items`;
+  $("#impactValue").textContent = `${stats.impactValue}h`;
+  $("#queueLabel").textContent = `${stats.total} items`;
+  $("#recordCount").textContent = `${filteredRecords().length} shown`;
   $("#aiInsight").textContent = generateInsight();
 }
 
-function renderAnalytics() {
+function renderStages() {
+  const board = $("#stageBoard");
+  board.innerHTML = "";
+  const total = Math.max(records.length, 1);
+  config.profile.stages.forEach((stage) => {
+    const stageRecords = records.filter((record) => record.stage === stage);
+    const high = stageRecords.filter((record) => record.priority === "high").length;
+    const percent = Math.max(8, Math.round((stageRecords.length / total) * 100));
+    const card = document.createElement("article");
+    card.className = "stage";
+    card.innerHTML = `<strong>${stage}<span>${stageRecords.length}</span></strong><small>高風險 ${high}｜AI 排序 ${percent}%</small><i style="width:${percent}%"></i>`;
+    board.append(card);
+  });
+}
+
+function renderRisks() {
   const stats = getStats();
-  const maxRisk = Math.max(stats.highRisk, stats.mediumRisk, stats.lowRisk, 1);
   const rows = [
     ["高風險", stats.highRisk, "high"],
     ["中風險", stats.mediumRisk, "medium"],
     ["低風險", stats.lowRisk, "low"],
     ["急件", stats.urgent, "urgent"],
   ];
+  const max = Math.max(...rows.map((row) => row[1]), 1);
   $("#riskBars").innerHTML = rows.map(([label, count, key]) => {
-    const width = Math.max(8, Math.round((count / maxRisk) * 100));
+    const width = Math.max(8, Math.round((count / max) * 100));
     return `<div class="risk-row" data-risk="${key}"><span>${label}</span><div class="risk-track"><i class="risk-fill" style="width:${width}%"></i></div><b>${count}</b></div>`;
   }).join("");
-  $("#savedHours").textContent = `${stats.savedHours}h`;
-  $("#automationRate").textContent = `${stats.automationRate}%`;
-  $("#improvementCount").textContent = stats.improvementCount;
-}
-
-function renderBoard() {
-  const board = $("#stageBoard");
-  board.innerHTML = "";
-  config.profile.stages.forEach((stage) => {
-    const count = records.filter((record) => record.stage === stage).length;
-    const percent = records.length ? Math.round((count / records.length) * 100) : 0;
-    const card = document.createElement("article");
-    card.className = "stage";
-    card.innerHTML = `<strong>${stage}<span>${count}</span></strong><i style="width:${Math.max(percent, 8)}%"></i>`;
-    board.append(card);
-  });
 }
 
 function renderTasks() {
   const list = $("#taskList");
+  const rows = filteredRecords().sort((a, b) => Number(a.done) - Number(b.done) || b.score - a.score);
   list.innerHTML = "";
-  const sorted = [...records].sort((a, b) => Number(a.done) - Number(b.done) || b.score - a.score);
-  if (!sorted.length) {
-    list.innerHTML = `<div class="empty">目前沒有資料，新增一筆${config.profile.object}開始體驗。</div>`;
-    return;
-  }
-  sorted.forEach((record) => {
+  rows.forEach((record) => {
     const card = document.createElement("article");
     card.className = "task-card";
     card.classList.toggle("done", record.done);
     card.innerHTML = `
       <header>
         <h3>${record.title}</h3>
-        <span class="pill ${record.priority}">${record.priority === "high" ? "高風險" : record.priority === "medium" ? "中風險" : "低風險"}</span>
+        <span class="pill ${record.priority}">${priorityText(record.priority)}</span>
       </header>
       <p>${record.target}</p>
       <div class="task-meta">
@@ -125,63 +136,90 @@ function renderTasks() {
   });
 }
 
-function render() {
-  renderStats();
-  renderAnalytics();
-  renderBoard();
-  renderTasks();
+function renderLogs() {
+  $("#logList").innerHTML = logs.slice(0, 6).map((log) => `<p>${log}</p>`).join("");
 }
 
-document.querySelectorAll("[data-action='run-ai']").forEach((button) => {
-  button.addEventListener("click", () => {
-    records = records.map((record) => record.done ? record : {
-      ...record,
-      score: Math.min(99, record.score + Math.floor(Math.random() * 7)),
-      priority: record.score > 72 ? "high" : record.score > 54 ? "medium" : "low",
-    });
-    saveRecords();
-    render();
+function render() {
+  renderKpis();
+  renderStages();
+  renderRisks();
+  renderTasks();
+  renderLogs();
+}
+
+function addLog(text) {
+  logs.unshift(text);
+  renderLogs();
+}
+
+function runAi() {
+  records = records.map((record) => {
+    if (record.done) return record;
+    const nextScore = Math.min(99, Number(record.score || 50) + Math.floor(Math.random() * 8));
+    return { ...record, score: nextScore, priority: nextScore >= 78 ? "high" : nextScore >= 55 ? "medium" : "low" };
   });
+  saveRecords();
+  addLog(`${preset.primaryAction}完成：系統已更新風險分數與優先順序。`);
+  render();
+}
+
+document.querySelectorAll("[data-action='run-ai']").forEach((button) => button.addEventListener("click", runAi));
+
+$("[data-action='simulate']").addEventListener("click", () => {
+  const target = records.find((record) => !record.done) || records[0];
+  if (!target) return;
+  records = records.map((record) => record.id === target.id ? { ...record, stage: config.profile.stages[Math.min(2, config.profile.stages.length - 1)] } : record);
+  saveRecords();
+  addLog(`主管已審核「${target.title}」，狀態推進到下一個流程。`);
+  render();
 });
 
 $("[data-action='reset']").addEventListener("click", () => {
-  records = structuredClone(config.records);
+  records = cloneRecords();
   saveRecords();
+  logs = ["已還原範例資料，方便重新展示完整流程。", ...logs];
   render();
 });
 
 $("#taskForm").addEventListener("submit", (event) => {
   event.preventDefault();
   const form = new FormData(event.currentTarget);
-  const score = 62 + Math.floor(Math.random() * 30);
-  records.unshift({
+  const score = 60 + Math.floor(Math.random() * 30);
+  const item = {
     id: `${config.id}-${Date.now()}`,
-    title: form.get("title").trim(),
-    target: form.get("target").trim(),
+    title: String(form.get("title")).trim(),
+    target: String(form.get("target")).trim(),
     owner: config.profile.owner,
     due: "D+3",
-    risk: form.get("risk"),
+    risk: String(form.get("risk")),
     stage: config.profile.stages[0],
     score,
     priority: score >= 78 ? "high" : "medium",
     done: false,
-  });
+  };
+  records.unshift(item);
   event.currentTarget.reset();
   saveRecords();
+  addLog(`新增「${item.title}」，AI 已自動放入待處理佇列。`);
   render();
 });
 
 $("#taskList").addEventListener("click", (event) => {
   const button = event.target.closest("button[data-id]");
   if (!button) return;
+  const target = records.find((record) => record.id === button.dataset.id);
   records = records.map((record) => record.id === button.dataset.id ? {
     ...record,
     done: !record.done,
-    stage: !record.done ? config.profile.stages.at(-1) : config.profile.stages[1],
+    stage: !record.done ? config.profile.stages.at(-1) : config.profile.stages[0],
   } : record);
   saveRecords();
+  addLog(`「${target.title}」狀態已更新，統計與 AI 摘要同步刷新。`);
   render();
 });
+
+$("#searchInput").addEventListener("input", render);
 
 render();
 })();
