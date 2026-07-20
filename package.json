@@ -1,9 +1,9 @@
 {
   "name": "jvision-ai-case-093-ai-helpdesk",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "start": "npx serve .",
-    "build": "node -e \"console.log('static site')\""
+    "build": "node -e \"console.log('interactive static demo')\""
   }
 }
