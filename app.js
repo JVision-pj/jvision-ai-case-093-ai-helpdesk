@@ -18,12 +18,25 @@ function saveRecords() {
   localStorage.setItem(storageKey, JSON.stringify(records));
 }
 
+function dueDays(value) {
+  const match = String(value || "").match(/D\+(\d+)/i);
+  return match ? Number(match[1]) : 99;
+}
+
 function getStats() {
+  const total = records.length;
   const open = records.filter((record) => !record.done).length;
   const highRisk = records.filter((record) => !record.done && record.priority === "high").length;
+  const mediumRisk = records.filter((record) => !record.done && record.priority === "medium").length;
+  const lowRisk = records.filter((record) => !record.done && record.priority === "low").length;
+  const urgent = records.filter((record) => !record.done && dueDays(record.due) <= 3).length;
   const done = records.filter((record) => record.done).length;
-  const doneRate = records.length ? Math.round((done / records.length) * 100) : 0;
-  return { open, highRisk, doneRate };
+  const doneRate = total ? Math.round((done / total) * 100) : 0;
+  const avgScore = total ? Math.round(records.reduce((sum, record) => sum + Number(record.score || 0), 0) / total) : 0;
+  const automationRate = total ? Math.min(98, Math.round(54 + doneRate * 0.22 + avgScore * 0.22)) : 0;
+  const savedHours = Math.max(1, Math.round((open * 0.9 + done * 0.45 + highRisk * 0.8) * 10) / 10);
+  const improvementCount = highRisk + mediumRisk + urgent;
+  return { total, open, highRisk, mediumRisk, lowRisk, urgent, done, doneRate, avgScore, automationRate, savedHours, improvementCount };
 }
 
 function generateInsight() {
@@ -35,7 +48,8 @@ function generateInsight() {
     return acc;
   }, {});
   const mainRisk = Object.entries(grouped).sort((a, b) => b[1] - a[1])[0];
-  return `優先處理「${top.title}」：${top.risk} 分數 ${top.score}。目前最多風險集中在「${mainRisk[0]}」(${mainRisk[1]} 筆)，建議由 ${top.owner} 先確認資料與下一步責任。`;
+  const urgent = openRecords.filter((record) => dueDays(record.due) <= 3).length;
+  return `優先處理「${top.title}」：${top.risk} 分數 ${top.score}。目前最多風險集中在「${mainRisk[0]}」(${mainRisk[1]} 筆)，另有 ${urgent} 筆急件，建議由 ${top.owner} 先確認資料與下一步責任。`;
 }
 
 function renderStats() {
@@ -43,8 +57,29 @@ function renderStats() {
   $("#openCount").textContent = stats.open;
   $("#riskCount").textContent = stats.highRisk;
   $("#doneRate").textContent = `${stats.doneRate}%`;
+  $("#totalCount").textContent = stats.total;
+  $("#avgScore").textContent = stats.avgScore;
+  $("#urgentCount").textContent = stats.urgent;
   $("#queueLabel").textContent = `${records.length} items`;
   $("#aiInsight").textContent = generateInsight();
+}
+
+function renderAnalytics() {
+  const stats = getStats();
+  const maxRisk = Math.max(stats.highRisk, stats.mediumRisk, stats.lowRisk, 1);
+  const rows = [
+    ["高風險", stats.highRisk, "high"],
+    ["中風險", stats.mediumRisk, "medium"],
+    ["低風險", stats.lowRisk, "low"],
+    ["急件", stats.urgent, "urgent"],
+  ];
+  $("#riskBars").innerHTML = rows.map(([label, count, key]) => {
+    const width = Math.max(8, Math.round((count / maxRisk) * 100));
+    return `<div class="risk-row" data-risk="${key}"><span>${label}</span><div class="risk-track"><i class="risk-fill" style="width:${width}%"></i></div><b>${count}</b></div>`;
+  }).join("");
+  $("#savedHours").textContent = `${stats.savedHours}h`;
+  $("#automationRate").textContent = `${stats.automationRate}%`;
+  $("#improvementCount").textContent = stats.improvementCount;
 }
 
 function renderBoard() {
@@ -92,6 +127,7 @@ function renderTasks() {
 
 function render() {
   renderStats();
+  renderAnalytics();
   renderBoard();
   renderTasks();
 }

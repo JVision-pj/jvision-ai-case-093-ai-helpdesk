@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>客服 AI 回覆站｜Jvision AI Interactive Demo</title>
   <meta name="description" content="整合共享收件箱、知識庫、AI 回覆與 SLA。" />
-  <link rel="stylesheet" href="./styles.css?v=layout-floating-orbs-20260720-1093" />
+  <link rel="stylesheet" href="./styles.css?v=layout-floating-orbs-20260720-stats-contrast-1093" />
 </head>
 <body class="layout-floating-orbs" data-layout="floating-orbs">
   <main class="shell">
@@ -33,6 +33,9 @@
           <article><small>待處理</small><strong id="openCount">--</strong></article>
           <article><small>高風險</small><strong id="riskCount">--</strong></article>
           <article><small>完成率</small><strong id="doneRate">--</strong></article>
+          <article><small>總案件</small><strong id="totalCount">--</strong></article>
+          <article><small>平均 AI 分數</small><strong id="avgScore">--</strong></article>
+          <article><small>急件</small><strong id="urgentCount">--</strong></article>
         </div>
         <div class="insight">
           <span>AI 建議</span>
@@ -43,6 +46,27 @@
 
     <section class="modules" id="modules" aria-label="功能架構">
       <article><span>01</span><h2>AI 摘要</h2><p>自動整理今日異常、待辦、風險與下一步建議。</p></article><article><span>02</span><h2>風險排序</h2><p>依期限、影響度與資料完整度排序最該先處理的項目。</p></article><article><span>03</span><h2>任務派發</h2><p>把 AI 建議轉成負責人、期限與可追蹤狀態。</p></article><article><span>04</span><h2>營運洞察</h2><p>將每日操作累積成趨勢、瓶頸與改善清單。</p></article>
+    </section>
+
+    <section class="panel analytics-panel" aria-label="AI 營運統計">
+      <div class="panel-title">
+        <span>AI 營運統計</span>
+        <b>Data Pulse</b>
+      </div>
+      <div class="analytics-grid">
+        <article class="analytics-card">
+          <span>風險分布</span>
+          <div class="risk-bars" id="riskBars"></div>
+        </article>
+        <article class="analytics-card">
+          <span>AI 成效估算</span>
+          <div class="impact-grid">
+            <article><small>預估節省工時</small><strong id="savedHours">--</strong></article>
+            <article><small>自動化覆蓋率</small><strong id="automationRate">--</strong></article>
+            <article><small>改善任務</small><strong id="improvementCount">--</strong></article>
+          </div>
+        </article>
+      </div>
     </section>
 
     <section class="workspace" id="workspace">
@@ -87,6 +111,6 @@
   <script>
     window.DEMO_CONFIG = {"id":1093,"caseNo":"093","name":"客服 AI 回覆站","category":"協作、企業營運與 AI 工作區","description":"整合共享收件箱、知識庫、AI 回覆與 SLA。","repoName":"jvision-ai-case-093-ai-helpdesk","profile":{"object":"營運任務","owner":"營運主管","stages":["新任務","處理中","待簽核","已完成"],"risks":["SLA 逾期","知識缺口","人力負載","流程卡關"],"fields":["部門","期限","風險","負責人"]},"records":[{"id":"1093-1","title":"營運任務 1","target":"客服 AI 回覆站 · 部門 1","owner":"Leo","due":"D+5","risk":"SLA 逾期","stage":"新任務","score":77,"priority":"medium","done":false},{"id":"1093-2","title":"營運任務 2","target":"客服 AI 回覆站 · 部門 2","owner":"Yuna","due":"D+4","risk":"知識缺口","stage":"處理中","score":67,"priority":"medium","done":false},{"id":"1093-3","title":"營運任務 3","target":"客服 AI 回覆站 · 部門 3","owner":"Kevin","due":"D+1","risk":"人力負載","stage":"待簽核","score":83,"priority":"high","done":false},{"id":"1093-4","title":"營運任務 4","target":"客服 AI 回覆站 · 部門 4","owner":"營運主管","due":"D+10","risk":"流程卡關","stage":"已完成","score":41,"priority":"low","done":true},{"id":"1093-5","title":"營運任務 5","target":"客服 AI 回覆站 · 部門 5","owner":"Aken","due":"D+9","risk":"SLA 逾期","stage":"新任務","score":53,"priority":"low","done":false},{"id":"1093-6","title":"營運任務 6","target":"客服 AI 回覆站 · 部門 6","owner":"Mia","due":"D+4","risk":"知識缺口","stage":"處理中","score":65,"priority":"medium","done":false},{"id":"1093-7","title":"營運任務 7","target":"客服 AI 回覆站 · 部門 7","owner":"Leo","due":"D+4","risk":"人力負載","stage":"待簽核","score":55,"priority":"low","done":false},{"id":"1093-8","title":"營運任務 8","target":"客服 AI 回覆站 · 部門 8","owner":"Yuna","due":"D+2","risk":"流程卡關","stage":"已完成","score":63,"priority":"medium","done":true}],"modules":[{"title":"AI 摘要","text":"自動整理今日異常、待辦、風險與下一步建議。"},{"title":"風險排序","text":"依期限、影響度與資料完整度排序最該先處理的項目。"},{"title":"任務派發","text":"把 AI 建議轉成負責人、期限與可追蹤狀態。"},{"title":"營運洞察","text":"將每日操作累積成趨勢、瓶頸與改善清單。"}]};
   </script>
-  <script src="./app.js?v=interactive-20260720"></script>
+  <script src="./app.js?v=stats-20260720"></script>
 </body>
 </html>
